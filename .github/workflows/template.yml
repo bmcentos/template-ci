@@ -32,9 +32,6 @@ jobs:
     if: ${{ inputs.custom_steps != '' }}  # Condicional para rodar apenas se custom_steps for fornecido
     steps:
       - run: |
-          steps_list="${{ inputs.custom_steps }}"
-          IFS=',' read -ra STEPS <<< "$steps_list"
-          for step in "${STEPS[@]}"; do
-            echo "Running custom step: $step"
-            eval $step
-          done
+          echo Excutando custom steps...
+          ${{ inputs.custom_steps }}
+
