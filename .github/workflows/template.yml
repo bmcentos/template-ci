@@ -1,0 +1,40 @@
+name: Reusable Template
+
+on:
+  workflow_call:
+    inputs:
+      container_image:
+        required: true
+        type: string
+      custom_steps:
+        required: false
+        type: string 
+
+jobs:
+  checkout:
+    runs-on: self-hosted
+    container:
+      image: ${{ inputs.container_image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+  init:
+    runs-on: self-hosted
+    needs: checkout
+    steps:
+      - run: 'echo "[+] Teste: hello cloud gurus"'
+      - run: echo $HOSTNAME
+
+  custom:
+    runs-on: self-hosted
+    needs: init
+    if: ${{ inputs.custom_steps != '' }}  # Condicional para rodar apenas se custom_steps for fornecido
+    steps:
+      - run: |
+          steps_list="${{ inputs.custom_steps }}"
+          IFS=',' read -ra STEPS <<< "$steps_list"
+          for step in "${STEPS[@]}"; do
+            echo "Running custom step: $step"
+            eval $step
+          done
